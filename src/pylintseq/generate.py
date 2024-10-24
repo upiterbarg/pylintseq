@@ -10,6 +10,9 @@ from argparse import ArgumentParser
 import multiprocessing
 import gc
 import psutil
+import warnings
+
+warnings.filterwarnings("ignore")
 
 from .utils import *
 
