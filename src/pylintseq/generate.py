@@ -71,6 +71,13 @@ def parse_args():
 
     args = parser.parse_args()
 
+    if args.source is None:
+        raise ValueError(f"Please specify a source file of code data to lint")
+    elif not os.path.exists(args.source):
+        raise ValueError(
+            f"Cannot find {args.source} in your file system. Are you sure this file exists?"
+        )
+
     if not args.dest_dir:
         args.dest_dir = os.getcwd()
     else:
@@ -81,7 +88,7 @@ def parse_args():
         f"{len([f for f in os.listdir(args.dest_dir)])}".zfill(4)
         + f"_{args.num_samples}_{args.num_edit_paths_per_sample}_{args.seed}_vec.jsonl",
     )
-    print(f"Destination file: {args.dest}")
+    print(f"Dumping pylintseq outputs to: {args.dest}")
     return args
 
 
@@ -182,7 +189,7 @@ def generate():
                 # log_memory_usage()
 
                 # Parallel processing of subprocesses with minimal data passed
-                results = Parallel(n_jobs=num_proc, backend="loky", timeout=200)(
+                results = Parallel(n_jobs=num_proc, backend="loky", timeout=1000)(
                     delayed(subprocess_task)(
                         start_i, num_samples, args, args.data_key, df, samples
                     )
