@@ -32,10 +32,7 @@ def parse_args():
     )
     parser.add_argument(
         "--source",
-        default=os.path.join(
-            "/data/projects/editregress",
-            "instruct_data/merged_oss_data_raw_pyt.jsonl",
-        ),
+        default=None,
         type=str,
         help="Path to source JSONLines file.",
     )
