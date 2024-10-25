@@ -21,7 +21,7 @@ Once installed in your Python environment, you can run parallelized `pylintseq` 
 ```
 pylintseq \
     -p PATH_TO_JSONLINES_DS \
-    -d DESTIONATION_DIR \                                  
+    -d DESTIONATION_DIR \                                  # default: saves data to the current working directory
     --prompt_data_field NAME_OF_PROMPT_DATA_FIELD \        # default: 'instruction' (pass as 'None' if not defined)
     --code_data_field NAME_OF_CODE_DATA_FIELD \            # default: 'response'
     -s NUMBER_OF_EDIT_PATHS_TO_GENERATE_PER_SAMPLE  \      # default: 1
