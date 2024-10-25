@@ -16,7 +16,7 @@ pip install .
 
 ## Usage
 
-Once installed in your Python environment, you can run parallelized `pylintseq` from any directory on a code dataset (in JSONLines format) using a single line of code.
+Once installed in your Python environment, you can run parallelized `pylintseq` from any directory on an LM training corpus of Python programs using a single line of code. The training corpus must be formatted as a JSONLines file.
 
 ```
 pylintseq \

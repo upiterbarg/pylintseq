@@ -85,6 +85,11 @@ def parse_args():
             f"Cannot find {args.name_or_path} in your file system. Are you sure this file exists?"
         )
 
+    assert args.name_or_path[args.name_or_path.find(".") + 1 :] in [
+        "jsonl",
+        "jsonlines",
+    ], "Source data must be in jsonlines format!"
+
     if args.prompt_data_field == "None":
         args.prompt_data_field = None
 
