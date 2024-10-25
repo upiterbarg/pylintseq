@@ -38,6 +38,7 @@ def parse_args():
         help="Path to source JSONLines file.",
     )
     parser.add_argument(
+        "-d",
         "--dest_dir",
         default=None,
         type=str,
@@ -58,9 +59,14 @@ def parse_args():
         help="Number of parallel workers to use during synthetic data generation.",
     )
     parser.add_argument(
-        "--data_key",
+        "--code_data_field",
         default="response",
-        help="Name of example data field in the source dataset.",
+        help="Name of example code data field in the source dataset.",
+    )
+    parser.add_argument(
+        "--prompt_data_field",
+        default="instruction",
+        help="Name of prompt data field in the source dataset (if any). Pass as `None` if not defined.",
     )
     parser.add_argument(
         "-s",
@@ -78,6 +84,9 @@ def parse_args():
         raise ValueError(
             f"Cannot find {args.name_or_path} in your file system. Are you sure this file exists?"
         )
+
+    if args.prompt_data_field == "None":
+        args.prompt_data_field = None
 
     if not args.dest_dir:
         args.dest_dir = os.getcwd()
@@ -98,7 +107,7 @@ def parse_args():
     return args
 
 
-def subprocess_task(start_i, total_samples, args, data_key, shared_df, samples):
+def subprocess_task(start_i, total_samples, args, shared_df, samples):
     """
     Batch generation of edit paths for each process to minimize memory usage.
     Uses shared memory to avoid duplicating large data objects.
@@ -108,7 +117,7 @@ def subprocess_task(start_i, total_samples, args, data_key, shared_df, samples):
 
     for i in range(total_samples):
         index = samples[start_i + i]
-        code_as_text = df_slice[data_key].iloc[i]
+        code_as_text = df_slice[args.code_data_field].iloc[i]
         code_as_text = strip_chain_of_thought(code_as_text)
 
         for _ in range(args.num_edit_paths_per_sample):
@@ -135,9 +144,15 @@ def subprocess_task(start_i, total_samples, args, data_key, shared_df, samples):
                 "edit_path": diff_seq,
                 "index": int(index),
                 "source_file": args.name_or_path,
-                "source_instruction": df_slice["instruction"].iloc[i],
-                "source_response": df_slice[data_key].iloc[i],
+                f"source_{args.code_data_field}": df_slice[args.code_data_field].iloc[
+                    i
+                ],
             }
+
+            if not args.prompt_data_field is None:
+                datum[f"source_{args.prompt_data_field}"] = (
+                    df_slice[args.prompt_data_field].iloc[i],
+                )
             data.append(datum)
 
         # Clear large variables to release memory immediately
@@ -157,11 +172,18 @@ def generate():
     set_seed_everywhere(args.seed)
 
     # Load the dataset into shared memory using multiprocessing.Manager
-    df = pd.read_json(
-        args.name_or_path,
-        lines=True,
-        dtype={"instruction": "string", args.data_key: "string"},
-    )
+    if not args.prompt_data_field is None:
+        df = pd.read_json(
+            args.name_or_path,
+            lines=True,
+            dtype={args.prompt_data_field: "string", args.code_data_field: "string"},
+        )
+    else:
+        df = pd.read_json(
+            args.name_or_path,
+            lines=True,
+            dtype={args.code_data_field: "string"},
+        )
 
     try:
         args.num_samples = int(args.num_samples)
@@ -197,7 +219,11 @@ def generate():
                 # Parallel processing of subprocesses with minimal data passed
                 results = Parallel(n_jobs=num_proc, backend="loky", timeout=1000)(
                     delayed(subprocess_task)(
-                        start_i, num_samples, args, args.data_key, df, samples
+                        start_i,
+                        num_samples,
+                        args,
+                        df,
+                        samples,
                     )
                     for start_i, num_samples in task_args[
                         batch_start : batch_start + batch_size
