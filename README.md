@@ -9,7 +9,7 @@ LintSeq reparameterizes code synthesis with language models into a sequential co
 Install `pylintseq` with pip.
 
 ```
-pip install pylintseq==0.0.1
+pip install pylintseq
 ```
 
 To build `pylintseq` from source, clone the project repository with git.
