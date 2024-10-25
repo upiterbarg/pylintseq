@@ -6,7 +6,13 @@ LintSeq reparameterizes code synthesis with language models into a sequential co
 
 ## Installation
 
-To build `lintseq` from source, clone this repository and pip install.
+Install `pylintseq` with pip.
+
+```
+pip install pylintseq==0.0.1
+```
+
+To build `pylintseq` from source, clone the project repository with git.
 
 ```
 git clone https://github.com/upiterbarg/pylintseq.git
