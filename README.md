@@ -6,7 +6,7 @@ LintSeq reparameterizes code synthesis with language models into a sequential co
 
 ## Installation
 
-Install `pylintseq` with pip to build it from source.
+To build `lintseq` from source, clone this repository and pip install.
 
 ```
 git clone https://github.com/upiterbarg/pylintseq.git
@@ -43,7 +43,7 @@ Edit sequences are saved as lists of strings to a column called `edit_path`. The
 >>> import pandas as pd
 >>> df = pd.read_json(PATH_TO_PYLINTSEQ_DS, lines=True)
 >>> df
-   edit_path                                          index   source_file           source_instruction                                 source_response
+   edit_path                                          index   source_file            source_instruction                                 source_response
 0  [@@ -0,0 +1,6 @@\n+import statistics\n+\n+def ...    665   my_code_dataset.jsonl  Write a Python function that takes a list of g...  Here is the implementation:\n\n```python\nimpo...
 1  [@@ -0,0 +1,5 @@\n+def get_resource():\n+    r...  63189   my_code_dataset.jsonl  You are tasked with creating a simple web serv...  ```python\nfrom flask import Flask, jsonify\n\...
 2  [@@ -0,0 +1,6 @@\n+def create_file_from_templa...  24173   my_code_dataset.jsonl  Write a Python function `create_file_from_temp...  To create a file from a template, you need to ...
