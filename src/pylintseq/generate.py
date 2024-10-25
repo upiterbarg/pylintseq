@@ -150,9 +150,9 @@ def subprocess_task(start_i, total_samples, args, shared_df, samples):
             }
 
             if not args.prompt_data_field is None:
-                datum[f"source_{args.prompt_data_field}"] = (
-                    df_slice[args.prompt_data_field].iloc[i],
-                )
+                datum[f"source_{args.prompt_data_field}"] = df_slice[
+                    args.prompt_data_field
+                ].iloc[i]
             data.append(datum)
 
         # Clear large variables to release memory immediately
