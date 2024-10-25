@@ -37,8 +37,6 @@ To run LintSeq on only a (randomly sampled) subset of your dataset, pass the add
 
 `pylintseq` saves processed data to the JSONLines format. You can load it using your favorite JSONLines reader. An example using `pandas` is shown below. 
 
-Edit sequences are saved as lists of strings to a column called `edit_path`. The contents of the data fields `NAME_OF_PROMPT_DATA_FIELD` and `NAME_OF_CODE_DATA_FIELD` in the original dataset will be respectively saved to columns titled `source_${NAME_OF_PROMPT_DATA_FIELD}` and `source_${NAME_OF_CODE_DATA_FIELD}`.
-
 ```
 >>> import pandas as pd
 >>> df = pd.read_json(PATH_TO_PYLINTSEQ_DS, lines=True)
@@ -56,6 +54,7 @@ Edit sequences are saved as lists of strings to a column called `edit_path`. The
 9  [@@ -0,0 +1,3 @@\n+class NetworkDevice:\n+    ...  55801   my_code_dataset.jsonl  You are tasked with creating a Python class th...  ```python\nfrom netmiko import ConnectHandler\...
 ```
 
+Edit sequences are saved as lists of strings to a column called `edit_path`. The contents of the data fields `NAME_OF_PROMPT_DATA_FIELD` and `NAME_OF_CODE_DATA_FIELD` in the original dataset will be respectively saved to columns titled `source_${NAME_OF_PROMPT_DATA_FIELD}` and `source_${NAME_OF_CODE_DATA_FIELD}`.
 
 ## FAQs
 
