@@ -300,9 +300,7 @@ def lintseq_backward_sampling_pythonic(
         edit = []
 
         while fail:
-            with tempfile.NamedTemporaryFile(
-                delete_on_close=True, suffix=".py", mode="r+"
-            ) as fp:
+            with tempfile.NamedTemporaryFile(suffix=".py", mode="r+") as fp:
                 if len(affected_lines) > 0:
                     affected_children = []
                     for line in affected_lines:
