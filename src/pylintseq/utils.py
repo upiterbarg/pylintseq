@@ -139,7 +139,7 @@ def inflate_edit_path(code_as_text, edit_sequence):
 
     for i in range(len(raw_text_seq) - 1):
         diff_text_seq += [get_diff(raw_text_seq[i], raw_text_seq[i + 1])]
-    return raw_text_seq, diff_text_seq
+    return raw_text_seq, [d for d in diff_text_seq if len(d) > 0]
 
 
 def strip_chain_of_thought(response, expected_programming_language="python"):

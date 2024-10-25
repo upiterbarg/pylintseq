@@ -31,7 +31,8 @@ def parse_args():
         help="Random seed used during synthetic data generation.",
     )
     parser.add_argument(
-        "--source",
+        "-p",
+        "--name_or_path",
         default=None,
         type=str,
         help="Path to source JSONLines file.",
@@ -71,11 +72,11 @@ def parse_args():
 
     args = parser.parse_args()
 
-    if args.source is None:
+    if args.name_or_path is None:
         raise ValueError(f"Please specify a source file of code data to lint")
-    elif not os.path.exists(args.source):
+    elif not os.path.exists(args.name_or_path):
         raise ValueError(
-            f"Cannot find {args.source} in your file system. Are you sure this file exists?"
+            f"Cannot find {args.name_or_path} in your file system. Are you sure this file exists?"
         )
 
     if not args.dest_dir:
@@ -83,11 +84,16 @@ def parse_args():
     else:
         os.makedirs(args.dest_dir, exist_ok=True)
 
+    source_file = args.name_or_path.split("/")[-1]
     args.dest = os.path.join(
         args.dest_dir,
-        f"{len([f for f in os.listdir(args.dest_dir)])}".zfill(4)
+        source_file[: source_file.find(".")]
         + f"_{args.num_samples}_{args.num_edit_paths_per_sample}_{args.seed}_vec.jsonl",
     )
+    if os.path.exists(args.dest):
+        raise ValueError(
+            f"A file already exists at the destination {args.dest}. Please remove this file to continue!"
+        )
     print(f"Dumping pylintseq outputs to: {args.dest}")
     return args
 
@@ -128,7 +134,7 @@ def subprocess_task(start_i, total_samples, args, data_key, shared_df, samples):
             datum = {
                 "edit_path": diff_seq,
                 "index": int(index),
-                "source_file": args.source,
+                "source_file": args.name_or_path,
                 "source_instruction": df_slice["instruction"].iloc[i],
                 "source_response": df_slice[data_key].iloc[i],
             }
@@ -152,7 +158,7 @@ def generate():
 
     # Load the dataset into shared memory using multiprocessing.Manager
     df = pd.read_json(
-        args.source,
+        args.name_or_path,
         lines=True,
         dtype={"instruction": "string", args.data_key: "string"},
     )
